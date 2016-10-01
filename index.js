@@ -56,6 +56,19 @@ slack.on(RTM_EVENTS.MESSAGE, function(message) {
 		if(/(hello|hi|hey) (bot|sridharbot)/g.test(msgText)) {
 			slack.sendMessage('Hello to you too, '+messageSender.name +'!', channel.id);
 		}
+		if(/uptime/g.test(msgText)){
+			if(!messageSender.is_admin){
+				slack.sendMessage('Sorry ' + messageSender.name + '! This command is only for admin users!', channel.id);
+				return;
+			}
+			let dm = slack.dataStore.getDMByName(messageSender.name);
+			let uptime = process.uptime();
+			console.log(uptime);
+			let minutes = parseInt(uptime/60, 10),
+				hours = parseInt(minutes/60, 10),
+				seconds = parseInt(uptime - (minutes * 60) - ((hours*60)*60), 10);
+			slack.sendMessage('I have been running for: ' + hours +' hours, ' + minutes + ' minutes, ' + seconds +' seconds!', dm.id);
+		}
 	}
 });
 
