@@ -26,10 +26,39 @@ slack.on(CLIENT_EVENTS.RTM.RTM_CONNECTION_OPENED, function() {
   console.log('The bot is currently a member of: ' +channelNames);
 
   botChannels.forEach((channel) => {
-  	let channelMembers = channel.members.map((id) => {return slack.dataStore.getUserById(id);})
+  	let channelMembers = channel.members.map((id) => {return slack.dataStore.getUserById(id);});
+
+  	channelMembers = channelMembers.filter((member) => {return !member.is_bot;});
+
   	let memberNames = channelMembers.map((member) => {return member.name;}).join(', ');
-  	console.log('Members of this channel: ', memberNames);})  
+  	console.log('Members of this channel: ', memberNames);
+  	slack.sendMessage('Hello '+memberNames+ '!', channel.id);
+  });
 });
+
+
+slack.on(CLIENT_EVENTS.RTM.AUTHENTICATED, (rtmStartData) => {
+	console.log('Logged in as '+ rtmStartData.self.name + ' of team ' 
+		+ rtmStartData.team.name + ' but not yet connected to a channel!');
+});
+
+slack.on(RTM_EVENTS.MESSAGE, function(message) {
+	let messageSender = slack.dataStore.getUserById(message.user);
+
+	if(messageSender && messageSender.is_bot){
+		return;
+	}
+
+	let channel = slack.dataStore.getChannelGroupOrDMById(message.channel);
+
+	if(message.text) {
+		let msgText = message.text.toLowerCase();
+		if(/(hello|hi|hey) (bot|sridharbot)/g.test(msgText)) {
+			slack.sendMessage('Hello to you too, '+messageSender.name +'!', channel.id);
+		}
+	}
+});
+
 
 // Start the login process
 slack.start();
