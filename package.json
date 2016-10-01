@@ -1,0 +1,14 @@
+{
+  "name": "SlackBot",
+  "version": "0.0.0",
+  "description": "My first Slack Bot!",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sridhar Swamy",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/client": "^3.6.0"
+  }
+}
